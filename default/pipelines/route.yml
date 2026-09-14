@@ -6,12 +6,12 @@ routes:
     disabled: false
     pipeline: encrypt_pii
     description: Every event entering the pack goes through the field-encryption
-      pipeline, then __group hands it to the Worker Group route table with
-      __inputId intact. Route it to a destination Cribl Search can read there.
+      pipeline, then to the pack Destination vct_encrypt_demo_lake (Cribl Lake),
+      which Cribl Search decrypts from.
     enableOutputExpression: false
     filter: "true"
     clones: []
-    output: __group
+    output: vct_encrypt_demo_lake
   - id: default
     name: default
     final: true

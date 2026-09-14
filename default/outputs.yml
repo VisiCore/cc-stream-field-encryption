@@ -1,0 +1,44 @@
+outputs:
+  vct_encrypt_demo_lake:
+    systemFields:
+      - cribl_pipe
+    streamtags: []
+    signatureVersion: v4
+    reuseConnections: true
+    rejectUnauthorized: true
+    enableAssumeRole: false
+    durationSeconds: 3600
+    stagePath: $CRIBL_HOME/state/outputs/staging
+    addIdToStagePath: true
+    objectACL: private
+    removeEmptyDirs: true
+    baseFileName: "`CriblOut`"
+    fileNameSuffix: '`.${C.env["CRIBL_WORKER_ID"]}.${__format}${__compression ===
+      "gzip" ? ".gz" : ""}`'
+    maxFileSizeMB: 64
+    maxOpenFiles: 100
+    headerLine: ""
+    writeHighWaterMark: 64
+    onBackpressure: block
+    deadletterEnabled: false
+    onDiskFullBackpressure: block
+    maxFileOpenTimeSec: 300
+    maxFileIdleTimeSec: 300
+    maxConcurrentFileParts: 4
+    verifyPermissions: true
+    maxClosingFilesToBackpressure: 100
+    awsAuthenticationMethod: auto
+    emptyDirCleanupSec: 300
+    type: cribl_lake
+    destPath: vct_encrypt_demo
+    compress: gzip
+    forceCloseOnShutdown: false
+    retrySettings:
+      enabled: false
+    orphans:
+      disabled: true
+    storageLocationId: cribl_lake
+    dynamicDataset: false
+    description: Cribl Lake dataset that Cribl Search decrypts from. Change destPath
+      if you use another dataset.
+    directoryBatchSize: 1000

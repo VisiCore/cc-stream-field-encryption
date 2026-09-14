@@ -1,7 +1,7 @@
 inputs:
   vct_field_encryption_datagen:
     type: datagen
-    disabled: true
+    disabled: false
     sendToRoutes: true
     pqEnabled: false
     streamtags:
