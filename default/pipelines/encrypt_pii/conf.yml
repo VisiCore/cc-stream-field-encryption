@@ -1,0 +1,61 @@
+asyncFuncTimeout: 1000
+output: default
+streamtags: []
+description: Extract social/cardNumber/accountNumber/userName from _raw, encrypt
+  the PII fields with a key class 1 key (C.Crypto.encrypt), and mask the same
+  values inside _raw. Decrypt in Cribl Search with decrypt(field,
+  "<workerGroup>").
+functions:
+  - id: comment
+    filter: "true"
+    disabled: false
+    conf:
+      comment: |-
+        Field-level encryption demo (replaces Splunk cribldecrypt workflow).
+        1) regex_extract pulls social / cardNumber / accountNumber / userName to top-level fields.
+        2) eval overwrites the three PII fields with C.Crypto.encrypt(value, 1) — key class 1, key auto-selected from this Worker Group's Encryption Keys.
+        3) mask replaces the same values inside _raw so the raw event carries ciphers too.
+        In Cribl Search: dataset="vct_encrypt_demo" | extend social_clear = decrypt(social, "defaultHybrid")
+  - id: regex_extract
+    filter: "true"
+    disabled: false
+    conf:
+      source: _raw
+      iterations: 100
+      overwrite: false
+      regex: /social=(?<social>\d+)/
+      regexList:
+        - regex: /cardNumber=(?<cardNumber>\d+)/
+        - regex: /accountNumber=(?<accountNumber>\d+)/
+        - regex: /userName=(?<userName>[^,\]]+)/
+  - id: eval
+    filter: social != null || cardNumber != null || accountNumber != null
+    disabled: false
+    conf:
+      add:
+        - name: social
+          value: "social != null ? C.Crypto.encrypt(String(social), 1) : undefined"
+        - name: cardNumber
+          value: "cardNumber != null ? C.Crypto.encrypt(String(cardNumber), 1) :
+            undefined"
+        - name: accountNumber
+          value: "accountNumber != null ? C.Crypto.encrypt(String(accountNumber), 1) :
+            undefined"
+        - name: pii_encrypted
+          value: "true"
+        - name: pii_keyclass
+          value: "1"
+      remove: []
+  - id: mask
+    filter: "true"
+    disabled: false
+    conf:
+      rules:
+        - matchRegex: /social=(\d+)/
+          replaceExpr: "`social=${C.Crypto.encrypt(g1, 1)}`"
+        - matchRegex: /cardNumber=(\d+)/
+          replaceExpr: "`cardNumber=${C.Crypto.encrypt(g1, 1)}`"
+        - matchRegex: /accountNumber=(\d+)/
+          replaceExpr: "`accountNumber=${C.Crypto.encrypt(g1, 1)}`"
+      fields:
+        - _raw
