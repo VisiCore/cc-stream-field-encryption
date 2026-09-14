@@ -71,7 +71,9 @@ dataset="vct_encrypt_demo"
 | project _time, userName, social, social_clear, cardNumber, cardNumber_clear, raw_clear
 ```
 
-`decrypt()` also works on strings with ciphers embedded in longer text, such as `_raw`. Values it cannot decrypt (wrong group, no access, not a cipher) are returned unchanged.
+`decrypt()` also works on strings with ciphers embedded in longer text, such as `_raw`. If the named Worker Group does not hold the key (wrong group, or no access to it) the function returns the literal `#CryptoDecrypt!` instead of a value. Plain strings that contain no cipher are returned unchanged.
+
+With the default `aes-256-cbc` key and **Use initialization vector** off, encryption is deterministic: the same plaintext always produces the same cipher. That lets you search for a known value without decrypting anything (`where social == encrypt("517140087", "defaultHybrid", "<keyId>")`), at the cost of revealing which events share a value. Turn on the IV option on the key if that matters.
 
 You can prove the round trip before any data exists:
 
@@ -94,7 +96,9 @@ Decrypted results are stored as plaintext in the Search job history. Shorten the
 1. `print c = encrypt(...) | extend d = decrypt(c, "<group>")` returns the original value.
 2. After deploy, `dataset="vct_encrypt_demo" | limit 5` shows `social`, `cardNumber`, and `accountNumber` as `#<keyId>::...#` and `pii_encrypted == true`.
 3. `decrypt(social, "<group>")` returns nine digits; `decrypt(_raw, "<group>")` returns the original event text.
-4. A user without access to the Worker Group gets the cipher back unchanged.
+4. `decrypt(social, "<some other group>")` returns `#CryptoDecrypt!`, which is what a user without access to the key's Worker Group sees.
+
+Verified 2026-09-13 on Cribl 4.17: 130 datagen events, all three fields and `_raw` decrypted for every event, wrong-group test returned `#CryptoDecrypt!`.
 
 ## References
 
