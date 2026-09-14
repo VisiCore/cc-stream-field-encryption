@@ -112,6 +112,12 @@ Decrypted results are stored as plaintext in the Search job history. Shorten the
 
 Verified 2026-09-13 on Cribl 4.17: 130 datagen events, all three fields and `_raw` decrypted for every event, wrong-group test returned `#CryptoDecrypt!`.
 
+## Results
+
+Cribl Search showing the stored ciphers (`social`, `cardNumber`) next to the values `decrypt()` returns at query time (`social_clear`, `raw_clear`):
+
+![Cribl Search decrypting the encrypted fields](docs/search-decrypt-results.png)
+
 ## References
 
 - Decryption of Data in Splunk (the workflow this replaces): https://docs.cribl.io/stream/securing-data-decryption/
