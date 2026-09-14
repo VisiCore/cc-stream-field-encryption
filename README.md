@@ -16,7 +16,7 @@ The pack contains:
 | Item | Name | Notes |
 |---|---|---|
 | Pipeline | `encrypt_pii` | The encryption logic (below) |
-| Route | `encrypt_pii` | Sends every event entering the pack through the pipeline, output `default` |
+| Route | `encrypt_pii` | Sends every event entering the pack through the pipeline, output `__group` (hand off to the Worker Group routes) |
 | Sample data | `business_event_pii.log` | 22 billing events with `social=`, `cardNumber=`, `accountNumber=`, `userName=` (a copy of Cribl's built-in `business_event` sample). Use it in the pipeline's Sample Data pane to preview the ciphers |
 | Source | `vct_field_encryption_datagen` | Datagen replaying the sample at 1 event/sec. **Ships disabled** |
 
@@ -55,20 +55,19 @@ The response includes the plaintext key once. Do not store it; Cribl already has
 
 **Processing > Packs > Add Pack > Import from file** and pick `dist/cc-stream-field-encryption_<version>.crbl`, or install from a URL. Then commit.
 
-### 3. Route data into the pack
+### 3. Get data through the pack
 
-**Option A, your own data:** create a Route (or edit an existing one) in the Worker Group with pipeline `pack:cc-stream-field-encryption` and the destination of your choice.
+Because the pack ships a Source, Cribl will not let a Worker Group Route use `pack:cc-stream-field-encryption` as its processor (packs that contain Sources or Destinations cannot be route processors, to prevent cycles). Data therefore enters the pack from a Source **inside** the pack, and the pack's `encrypt_pii` route outputs to `__group`, which hands the encrypted events to the Worker Group route table with `__inputId` intact.
 
-**Option B, the built-in demo generator:** inside the pack open **Sources**, enable `vct_field_encryption_datagen`, then open the pack's **Routes** and change the `encrypt_pii` route output from `default` to a destination Cribl Search can read (a Cribl Lake dataset). Pack Sources feed the pack's own route table, so no Worker Group route is needed.
-
-The reference setup used for testing was a Worker Group level Datagen and Route:
+**Demo:** inside the pack open **Sources** and enable `vct_field_encryption_datagen`. Then add a Worker Group Route:
 
 | Setting | Value |
 |---|---|
-| Source | Datagen `vct-encrypt-demo`, sample `business_event`, 1 event/sec |
-| Route filter | `__inputId=="datagen:vct-encrypt-demo"` |
-| Pipeline | `pack:cc-stream-field-encryption` |
+| Route filter | `__inputId.includes("vct_field_encryption_datagen")` |
+| Pipeline | `passthru` (the pack already encrypted the fields) |
 | Destination | Cribl Lake dataset `vct_encrypt_demo` |
+
+**Your own data:** either add your Source inside the pack (Sources tab) and route it in the Worker Group the same way, or delete the Datagen Source from the pack, after which `pack:cc-stream-field-encryption` becomes usable as a normal Route processor for any Worker Group Source.
 
 Commit and deploy the Worker Group. The Lake destination flushes files every five minutes, so allow a few minutes before the first events are searchable.
 

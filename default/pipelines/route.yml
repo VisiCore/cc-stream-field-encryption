@@ -5,12 +5,13 @@ routes:
     final: true
     disabled: false
     pipeline: encrypt_pii
-    description: All events entering the pack go through the field-encryption
-      pipeline, then back to the Worker Group route's destination.
+    description: Every event entering the pack goes through the field-encryption
+      pipeline, then __group hands it to the Worker Group route table with
+      __inputId intact. Route it to a destination Cribl Search can read there.
     enableOutputExpression: false
     filter: "true"
     clones: []
-    output: default
+    output: __group
   - id: default
     name: default
     final: true
