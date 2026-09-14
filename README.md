@@ -1,4 +1,4 @@
-# VCT Field Encryption
+# Field Encryption for Cribl Search (cc-stream-field-encryption)
 
 Field-level encryption in Cribl Stream, decrypted in Cribl Search. This pack replaces the Splunk `cribldecrypt` workflow (Cribl App for Splunk, key bundle on the search head, `cribl_keyclass_N` capabilities) with something that runs entirely inside Cribl: Stream encrypts selected values with `C.Crypto.encrypt`, the events land in a Cribl Lake dataset, and Cribl Search decrypts them on demand with its built-in `decrypt()` function. No key files are copied anywhere.
 
@@ -53,11 +53,11 @@ The response includes the plaintext key once. Do not store it; Cribl already has
 
 ### 2. Install the pack
 
-**Processing > Packs > Add Pack > Import from file** and pick `dist/vct-field-encryption_<version>.crbl`, or install from a URL. Then commit.
+**Processing > Packs > Add Pack > Import from file** and pick `dist/cc-stream-field-encryption_<version>.crbl`, or install from a URL. Then commit.
 
 ### 3. Route data into the pack
 
-**Option A, your own data:** create a Route (or edit an existing one) in the Worker Group with pipeline `pack:vct-field-encryption` and the destination of your choice.
+**Option A, your own data:** create a Route (or edit an existing one) in the Worker Group with pipeline `pack:cc-stream-field-encryption` and the destination of your choice.
 
 **Option B, the built-in demo generator:** inside the pack open **Sources**, enable `vct_field_encryption_datagen`, then open the pack's **Routes** and change the `encrypt_pii` route output from `default` to a destination Cribl Search can read (a Cribl Lake dataset). Pack Sources feed the pack's own route table, so no Worker Group route is needed.
 
@@ -67,7 +67,7 @@ The reference setup used for testing was a Worker Group level Datagen and Route:
 |---|---|
 | Source | Datagen `vct-encrypt-demo`, sample `business_event`, 1 event/sec |
 | Route filter | `__inputId=="datagen:vct-encrypt-demo"` |
-| Pipeline | `pack:vct-field-encryption` |
+| Pipeline | `pack:cc-stream-field-encryption` |
 | Destination | Cribl Lake dataset `vct_encrypt_demo` |
 
 Commit and deploy the Worker Group. The Lake destination flushes files every five minutes, so allow a few minutes before the first events are searchable.
@@ -129,11 +129,6 @@ Verified 2026-09-13 on Cribl 4.17: 130 datagen events, all three fields and `_ra
 
 ## Release Notes
 
-### Version 0.1.2 - 2026-09-13
-
-- Added sample data `business_event_pii.log` and a disabled Datagen Source `vct_field_encryption_datagen` inside the pack.
-- Pack description corrected; README documents the verified decrypt behaviour.
-
 ### Version 0.1.0 - 2026-09-13
 
-- Initial release: `encrypt_pii` pipeline (regex extract, `C.Crypto.encrypt` key class 1, mask on `_raw`) and default route.
+- Initial release: `encrypt_pii` pipeline (regex extract, `C.Crypto.encrypt` key class 1, mask on `_raw`), default route, sample data `business_event_pii.log`, and a disabled Datagen Source `vct_field_encryption_datagen`.
