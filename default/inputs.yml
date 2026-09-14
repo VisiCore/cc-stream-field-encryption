@@ -1,15 +1,18 @@
-vct_field_encryption_datagen:
-  type: datagen
-  disabled: true
-  sendToRoutes: true
-  pqEnabled: false
-  streamtags:
-    - vct
-    - encryption-demo
-  samples:
-    - eventsPerSec: 1
-      sample: vct_business_event_pii
-  metadata:
-    - name: sourcetype
-      value: '"vct:business_event"'
-  description: "Demo generator for the field-encryption pipeline (ships disabled). Enable it, point the pack route at a destination Search can read, commit and deploy."
+inputs:
+  vct_field_encryption_datagen:
+    type: datagen
+    disabled: true
+    sendToRoutes: true
+    pqEnabled: false
+    streamtags:
+      - vct
+      - encryption-demo
+    samples:
+      - eventsPerSec: 1
+        sample: vct_business_event_pii
+    metadata:
+      - name: sourcetype
+        value: '"vct:business_event"'
+    description: Demo generator for the field-encryption pipeline (ships disabled).
+      Enable it, point the pack route at a destination Search can read, commit
+      and deploy.
