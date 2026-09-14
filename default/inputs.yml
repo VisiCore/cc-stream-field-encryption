@@ -9,10 +9,11 @@ inputs:
       - encryption-demo
     samples:
       - eventsPerSec: 1
-        sample: vct_business_event_pii
+        sample: business_event
     metadata:
       - name: sourcetype
         value: '"vct:business_event"'
     description: Demo generator for the field-encryption pipeline (ships disabled).
-      Enable it, point the pack route at a destination Search can read, commit
-      and deploy.
+      Replays Cribl's built-in business_event sample, which exists on every
+      Worker. Enable it, add a Worker Group route for
+      __inputId.includes('vct_field_encryption_datagen'), commit and deploy.

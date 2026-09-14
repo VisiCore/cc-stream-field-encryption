@@ -18,7 +18,7 @@ The pack contains:
 | Pipeline | `encrypt_pii` | The encryption logic (below) |
 | Route | `encrypt_pii` | Sends every event entering the pack through the pipeline, output `__group` (hand off to the Worker Group routes) |
 | Sample data | `business_event_pii.log` | 22 billing events with `social=`, `cardNumber=`, `accountNumber=`, `userName=` (a copy of Cribl's built-in `business_event` sample). Use it in the pipeline's Sample Data pane to preview the ciphers |
-| Source | `vct_field_encryption_datagen` | Datagen replaying the sample at 1 event/sec. **Ships disabled** |
+| Source | `vct_field_encryption_datagen` | Datagen replaying Cribl's built-in `business_event` sample (same 22 events) at 1 event/sec. **Ships disabled**. It deliberately references the built-in sample rather than the pack's copy: Workers cannot resolve pack-scoped sample files for a Datagen Source and fail with `Unable to find sample with id=...` |
 
 The pipeline is written against the `business_event` format so it can be demonstrated out of the box, but the patterns are easy to swap for your own fields.
 
