@@ -11,7 +11,16 @@ Field-level encryption in Cribl Stream, decrypted in Cribl Search. This pack rep
 
 ## About this Pack
 
-The pack contains one pipeline, `encrypt_pii`, and a route table that sends every event entering the pack through it. It is written against Cribl's built-in `business_event` sample so it can be demonstrated with a Datagen Source, but the patterns are easy to swap for your own fields.
+The pack contains:
+
+| Item | Name | Notes |
+|---|---|---|
+| Pipeline | `encrypt_pii` | The encryption logic (below) |
+| Route | `encrypt_pii` | Sends every event entering the pack through the pipeline, output `default` |
+| Sample data | `business_event_pii.log` | 22 billing events with `social=`, `cardNumber=`, `accountNumber=`, `userName=` (a copy of Cribl's built-in `business_event` sample). Use it in the pipeline's Sample Data pane to preview the ciphers |
+| Source | `vct_field_encryption_datagen` | Datagen replaying the sample at 1 event/sec. **Ships disabled** |
+
+The pipeline is written against the `business_event` format so it can be demonstrated out of the box, but the patterns are easy to swap for your own fields.
 
 `encrypt_pii` does three things, in order:
 
@@ -48,7 +57,11 @@ The response includes the plaintext key once. Do not store it; Cribl already has
 
 ### 3. Route data into the pack
 
-Create a Route (or edit an existing one) with pipeline `pack:vct-field-encryption` and the destination of your choice. For the demo:
+**Option A, your own data:** create a Route (or edit an existing one) in the Worker Group with pipeline `pack:vct-field-encryption` and the destination of your choice.
+
+**Option B, the built-in demo generator:** inside the pack open **Sources**, enable `vct_field_encryption_datagen`, then open the pack's **Routes** and change the `encrypt_pii` route output from `default` to a destination Cribl Search can read (a Cribl Lake dataset). Pack Sources feed the pack's own route table, so no Worker Group route is needed.
+
+The reference setup used for testing was a Worker Group level Datagen and Route:
 
 | Setting | Value |
 |---|---|
@@ -115,6 +128,11 @@ Verified 2026-09-13 on Cribl 4.17: 130 datagen events, all three fields and `_ra
 - VisiCore Tech <CriblPacks@VisiCoreTech.com>
 
 ## Release Notes
+
+### Version 0.1.2 - 2026-09-13
+
+- Added sample data `business_event_pii.log` and a disabled Datagen Source `vct_field_encryption_datagen` inside the pack.
+- Pack description corrected; README documents the verified decrypt behaviour.
 
 ### Version 0.1.0 - 2026-09-13
 

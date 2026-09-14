@@ -1,0 +1,8 @@
+vct_business_event_pii:
+  sampleName: business_event_pii.log
+  description: Billing events with social, cardNumber, accountNumber and userName (copy of Cribl's built-in business_event sample)
+  isTemplate: true
+  tsTemplateField: ""
+  created: 1789360008676
+  size: 26846
+  numEvents: 22
